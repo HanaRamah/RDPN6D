@@ -25,7 +25,7 @@ CLASSES = IDX2CLASS.values()
 CLASSES = list(sorted(CLASSES))
 CLASS2IDX = {cls_name: idx for idx, cls_name in IDX2CLASS.items()}
 
-data_root = "data/BOP_DATASETS/lm_full"
+data_root = "data/BOP_DATASETS/ipd_full"
 
 
 def main():
@@ -50,7 +50,7 @@ def main():
         for idx in test_ids:
             target = {"im_id": idx, "inst_count": 1, "obj_id": cls_idx, "scene_id": cls_idx}
             test_targets.append(target)
-    res_file = osp.join(cur_dir, "lm_test_targets_bb8.json")
+    res_file = osp.join(cur_dir, "_targets_bb8.json")
     print(res_file)
     print(len(test_targets))  # 15526
     mmcv.dump(test_targets, res_file)
@@ -74,7 +74,7 @@ def main():
 13 iron 979
 14 lamp 1042
 15 phone 1059
-~/PoseEst/mylib/lib/pysixd/lm_test_targets_bb8.json
+~/PoseEst/mylib/lib/pysixd/_targets_bb8.json
 15526
 """
 if __name__ == "__main__":

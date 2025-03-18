@@ -172,9 +172,9 @@ def calc_scores(scene_ids, obj_ids, matches, n_top, do_print=True, dataset=""):
         logger.info("Mean scene recall:  {:.4f}".format(scores["mean_scene_recall"]))
         logger.info("Object recalls:\n{}".format(obj_recalls_str))
         logger.info("Scene recalls:\n{}".format(scene_recalls_str))
-        if dataset == "linemod":
+        if dataset == "ipd":
             logger.info(
-                "Average Recalls over 13 objects: {:.4f}".format(
+                "Average Recalls over 10 objects: {:.4f}".format(
                     np.mean([s for i, s in scores["obj_recalls"].items() if i not in [3, 7]])
                 )
             )
@@ -190,8 +190,8 @@ def match_and_eval_performance_scores(
     error_types=["vsd", "re", "te"],
     error_thresh={"vsd": 0.3, "cou": 0.5, "te": 5.0, "re": 5.0},  # cm  # deg
     error_thresh_fact={"add": 0.1, "adi": 0.1},
-    dataset="linemod",
-    cam_type="primesense",
+    dataset="ipd",
+    cam_type="cam1",
     n_top=1,
     vsd_delta=15,
     vsd_tau=20,
@@ -343,10 +343,10 @@ def match_and_eval_performance_scores(
         # -----------------------------------------------------------------------
         # Split the dataset of Hinterstoisser to the original LINEMOD dataset
         # and the Occlusion dataset by TUD (i.e. the extended GT for scene #2)
-        if dataset in ["hinterstoisser", "linemod", "linemod_occ"]:
-            if dataset in ["linemod", "hinterstoisser"]:
-                logger.info("-- LINEMOD dataset")
-                eval_sign_lm = "linemod_" + eval_sign
+        if dataset in ["hinterstoisser", "ipd", "linemod_occ"]:
+            if dataset in ["ipd", "hinterstoisser"]:
+                logger.info("-- IPD dataset")
+                eval_sign_lm = "ipd_" + eval_sign
                 matches_lm = [m for m in matches if m["scene_id"] == m["obj_id"]]
                 scores_lm = calc_scores(scene_ids, obj_ids, matches_lm, n_top, dataset=dataset)
 

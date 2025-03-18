@@ -29,7 +29,7 @@ This repository is the official PyTorch implementation of the work:
     ```
 
 ## Datasets
-Download the 6D pose datasets (LM, LM-O, YCB-V) from the
+Download the 6D pose datasets (lm, lm-O, YCB-V) from the
 [BOP website](https://bop.felk.cvut.cz/datasets/) and MP6D from [MP6D](https://github.com/yhan9848/MP6D)
 
 Please also download the metadata from [[Metadata](https://drive.google.com/drive/folders/1X95-ohc2b6iMTPEl-p4INn63vWx6IWuz?usp=drive_link)].

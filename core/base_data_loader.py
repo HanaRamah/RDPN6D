@@ -128,7 +128,7 @@ class Base_DatasetFromList(data.Dataset):
             shift_ratio = cfg.INPUT.DZI_SHIFT_RATIO * (2 * np.random.random_sample(2) - 1)  # [-0.25, 0.25]
             bbox_center = np.array([cx + bw * shift_ratio[0], cy + bh * shift_ratio[1]])  # (h/2, w/2)
             scale = max(y2 - y1, x2 - x1) * scale_ratio * cfg.INPUT.DZI_PAD_SCALE
-            # import ipdb; ipdb.set_trace()
+            # import lmb; lmb.set_trace()
         elif cfg.INPUT.DZI_TYPE.lower() == "roi10d":
             # shift (x1,y1), (x2,y2) by 15% in each direction
             _a = -0.15
@@ -180,7 +180,7 @@ class Base_DatasetFromList(data.Dataset):
                 Sometimes(0.5, Multiply((0.6, 1.4))),
                 Sometimes(0.5, LinearContrast((0.5, 2.2), per_channel=0.3))
                 ], random_order = False)"""
-            # for darker objects, e.g. LM driller: use BOOTSTRAP_RATIO: 16 and weaker augmentation
+            # for darker objects, e.g. lm driller: use BOOTSTRAP_RATIO: 16 and weaker augmentation
             aug_code_weaker = """Sequential([
                 Sometimes(0.4, CoarseDropout( p=0.1, size_percent=0.05) ),
                 # Sometimes(0.5, Affine(scale=(1.0, 1.2))),

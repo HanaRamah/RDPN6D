@@ -136,7 +136,7 @@ def eval_cached_results(cfg, output_dir, obj_ids=None):
 
 
 def get_data_ref(dataset_name):
-    ref_key_dict = {"lm": "lm_full", "lmo": "lmo_full", "ycbv": "ycbv", "ycbvposecnn": "ycbv", "tless": "tless", "itodd": "itodd_full"}
+    ref_key_dict = {"ipd": "ipd_full"}
     ref_key = ref_key_dict[dataset_name]
     return ref.__dict__[ref_key]
 
@@ -248,20 +248,10 @@ def load_and_print_val_scores_tab(
 ):
 
     vsd_deltas = {
-        "hb": 15,
-        "hbs": 15,
-        "icbin": 15,
-        "icmi": 15,
-        "itodd": 5,
-        "lm": 15,
-        "lmo": 15,
-        "ruapc": 15,
-        "tless": 15,
-        "tudl": 15,
-        "tyol": 15,
-        "ycbv": 15,
-        "ycbvposecnn": 15,
-    }
+
+        "ipd":15,
+        
+        }
     ntop = cfg.VAL.N_TOP
     val_dataset_name = cfg.VAL.DATASET_NAME
     vsd_delta = vsd_deltas[val_dataset_name]

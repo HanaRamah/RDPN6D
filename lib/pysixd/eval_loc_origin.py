@@ -281,11 +281,11 @@ def main():
 
         # Calculate the performance scores
         # -----------------------------------------------------------------------
-        # Split the dataset of Hinterstoisser to the original LINEMOD dataset
+        # Split the dataset of Hinterstoisser to the original linemod dataset
         # and the Occlusion dataset by TUD (i.e. the extended GT for scene #2)
         if dataset == "hinterstoisser":
 
-            print("-- LINEMOD dataset")
+            print("-- linemod dataset")
             eval_sign_lm = "linemod_" + eval_sign
             matches_lm = [m for m in matches if m["scene_id"] == m["obj_id"]]
             scores_lm = calc_scores(scene_ids, obj_ids, matches_lm, n_top)

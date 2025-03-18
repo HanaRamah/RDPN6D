@@ -30,12 +30,12 @@ class Texture(object):
 
     def makeResident(self):
         self.__handle = glGetTextureHandleNV(self.__id[0])
-        glMakeTextureHandleResidentNV(self.__handle)
+        glmakeTextureHandleResidentNV(self.__handle)
         return self.__handle
 
     def makeNonResident(self):
         if self.__handle != None:
-            glMakeTextureHandleNonResidentNV(self.__handle)
+            glmakeTextureHandleNonResidentNV(self.__handle)
 
     def delete(self):
         glDeleteTextures(1, self.__id)
@@ -74,12 +74,12 @@ class Texture1D(object):
 
     def makeResident(self):
         self.__handle = glGetTextureHandleNV(self.__id[0])
-        glMakeTextureHandleResidentNV(self.__handle)
+        glmakeTextureHandleResidentNV(self.__handle)
         return self.__handle
 
     def makeNonResident(self):
         if self.__handle != None:
-            glMakeTextureHandleNonResidentNV(self.__handle)
+            glmakeTextureHandleNonResidentNV(self.__handle)
 
     def delete(self):
         glDeleteTextures(1, self.__id)
@@ -120,12 +120,12 @@ class Texture3D(object):
 
     def makeResident(self):
         self.__handle = glGetTextureHandleNV(self.__id[0])
-        glMakeTextureHandleResidentNV(self.__handle)
+        glmakeTextureHandleResidentNV(self.__handle)
         return self.__handle
 
     def makeNonResident(self):
         if self.__handle != None:
-            glMakeTextureHandleNonResidentNV(self.__handle)
+            glmakeTextureHandleNonResidentNV(self.__handle)
 
     def delete(self):
         glDeleteTextures(1, self.__id)
@@ -159,12 +159,12 @@ class TextureMultisample(object):
 
     def makeResident(self):
         self.__handle = glGetTextureHandleNV(self.__id[0])
-        glMakeTextureHandleResidentNV(self.__handle)
+        glmakeTextureHandleResidentNV(self.__handle)
         return self.__handle
 
     def makeNonResident(self):
         if self.__handle != None:
-            glMakeTextureHandleNonResidentNV(self.__handle)
+            glmakeTextureHandleNonResidentNV(self.__handle)
 
     def delete(self):
         glDeleteTextures(1, self.__id)

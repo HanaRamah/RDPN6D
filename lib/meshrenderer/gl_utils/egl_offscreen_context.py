@@ -107,9 +107,9 @@ class OffscreenContext(object):
         self.__display = self._egl_display
 
     def make_current(self):
-        from OpenGL.EGL import eglMakeCurrent, EGL_NO_SURFACE
+        from OpenGL.EGL import eglmakeCurrent, EGL_NO_SURFACE
 
-        assert eglMakeCurrent(self._egl_display, EGL_NO_SURFACE, EGL_NO_SURFACE, self._egl_context)
+        assert eglmakeCurrent(self._egl_display, EGL_NO_SURFACE, EGL_NO_SURFACE, self._egl_context)
 
     def close(self):
         self.delete_context()

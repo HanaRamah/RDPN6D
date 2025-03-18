@@ -559,7 +559,7 @@ def print_trans_rot_errors(gts, obj_id, ts_est, ts_est_old, Rs_est, Rs_est_old):
 
 # def plot_vsd_err_hist(eval_args, eval_dir, scene_ids):
 def plot_vsd_err_hist(
-    eval_dir, scene_ids, obj_id, dataset_name="linemod", top_n=1, delta=15, tau=20, cost="step", cam_type="primesense"
+    eval_dir, scene_ids, obj_id, dataset_name="ipd", top_n=1, delta=15, tau=20, cost="step", cam_type="cam1"
 ):
     # top_n_eval = eval_args.getint('EVALUATION', 'TOP_N_EVAL')
     # top_n = eval_args.getint('METRIC', 'TOP_N')
@@ -578,7 +578,7 @@ def plot_vsd_err_hist(
 
     vsd_errs = []
     for scene_id in scene_ids:
-        if dataset_name in ["linemod", "hinterstoisser"]:
+        if dataset_name in ["ipd", "hinterstoisser"]:
             # NOTE: linemod scene_id == obj_id
             if obj_id != scene_id:
                 continue

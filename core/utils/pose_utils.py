@@ -927,7 +927,7 @@ def test_euler2quat():
 def test_qrot_points():
     from lib.pysixd.inout import load_ply
 
-    data_root = osp.normpath(osp.join(cur_dir, "../../datasets/BOP_DATASETS/lm/"))
+    data_root = osp.normpath(osp.join(cur_dir, "../../datasets/BOP_DATASETS/ipd/"))
     models_cad_files = [osp.join(data_root, "models/obj_{:06d}.ply".format(i)) for i in range(1, 15 + 1)]
     obj_id = 0
     points = load_ply(models_cad_files[obj_id])["pts"]
@@ -968,22 +968,18 @@ if __name__ == "__main__":
     from lib.pysixd.misc import get_symmetry_transformations
 
     IDX2CLASS = {
-        1: "ape",
-        2: "benchvise",
-        3: "bowl",
-        4: "camera",
-        5: "can",
-        6: "cat",
-        7: "cup",
-        8: "driller",
-        9: "duck",
-        10: "eggbox",
-        11: "glue",
-        12: "holepuncher",
-        13: "iron",
-        14: "lamp",
-        15: "phone",
-    }
+    0: "object0",
+    1: "object1",
+    4: "object4",
+    8: "object8",
+    10: "object10",
+    11: "object11",
+    14: "object14",
+    18: "object18",
+    19: "object19",
+    20: "object20",
+}
+    
     CLASSES = IDX2CLASS.values()
     CLASSES = sorted(CLASSES)
     CLASS2IDX = {cls_name: idx for idx, cls_name in IDX2CLASS.items()}
@@ -994,7 +990,7 @@ if __name__ == "__main__":
     width = 640
     height = 480
 
-    data_root = osp.normpath(osp.join(cur_dir, "../../data/BOP_DATASETS/lm_full/"))
+    data_root = osp.normpath(osp.join(cur_dir, "../../data/BOP_DATASETS/ipd_full/"))
 
     models_cad_files = [osp.join(data_root, "models/obj_{:06d}.ply".format(i)) for i in range(1, 15 + 1)]
     models_info = mmcv.load(osp.join(data_root, "models/models_info.pkl"))

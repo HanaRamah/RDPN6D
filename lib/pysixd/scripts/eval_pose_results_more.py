@@ -4,14 +4,14 @@
 """Evaluation script for the BOP Challenge 2019."""
 """
 python lib/pysixd/scripts/eval_pose_results_more.py \
-    --results_path data/BOP_DATASETS/lm_full/test/my_val_initial_poses_bb8_split/ \
+    --results_path data/BOP_DATASETS/ipd_full/test/my_val_initial_poses_bb8_split/ \
     --result_filenames my-val_lm-test-bb8.csv \
     --targets_filename lm_test_targets_bb8.json \
     --error_types ad,proj,rete,vsd,mssd,mspd \
     --renderer_type python # egl, cpp, aae, python
 
 python lib/pysixd/scripts/eval_pose_results_more.py \
-    --results_path data/BOP_DATASETS/lm_full/test/PoseCNN_val_cup_bowl_my_val_initial_poses_bb8_split/  \
+    --results_path data/BOP_DATASETS/ipd_full/test/PoseCNN_val_cup_bowl_my_val_initial_poses_bb8_split/  \
     --result_filenames  PoseCNN-val-cup-bowl-my-val_lm-test-bb8.csv    \
     --targets_filename lm_test_targets_bb8.json     \
     --error_types ad,proj,rete,vsd,mssd,mspd     \
@@ -49,6 +49,7 @@ p = {
                 "itodd": 5,
                 "lm": 15,
                 "lmo": 15,
+                "ipd":15,
                 "ruapc": 15,
                 "tless": 15,
                 "tudl": 15,

@@ -967,7 +967,8 @@ class GDRN_DatasetFromList(Base_DatasetFromList):
             dataset_dict["ego_log_quat"] = quaternion_lf.qlog(
                 torch.as_tensor(quat.astype("float32"))[None])[0]
         elif pnp_net_cfg.ROT_TYPE == "allo_log_quat":
-            dataset_dict["allo_log_quat"] = quaternion_lf.qlog(
+            dataset_dict["allo_log_quat"] = quaternion_lf.qlog(    # https://github.com/facebookresearch/detectron2/blob/master/detectron2/data/common.py
+
                 torch.as_tensor(allo_quat.astype("float32"))[None])[0]
         # lie vec
         elif pnp_net_cfg.ROT_TYPE == "ego_lie_vec":

@@ -26,7 +26,7 @@ CLASS2IDX = {cls_name: idx for idx, cls_name in IDX2CLASS.items()}
 
 
 def main():
-    image_set_dir = "data/LINEMOD_6D/LM6d_converted/LM6d_render_v1/image_set/real/"
+    image_set_dir = "data/LINEMOD_6D/lm6d_converted/lm6d_render_v1/image_set/real/"
     test_set_dict = CommentedMap({cls_idx: CommentedSeq([]) for cls_idx in IDX2CLASS.keys()})
     for cls_idx, cls_name in IDX2CLASS.items():
         print(cls_idx, cls_name)
@@ -39,9 +39,9 @@ def main():
     for cls_idx, indices in test_set_dict.items():
         indices.fa.set_flow_style()
 
-    res_file = osp.join(osp.expanduser("~/Storage/SIXD_DATASETS/LM6d_origin/", "test_set_bb8_sixd.yml"))
+    res_file = osp.join(osp.expanduser("~/Storage/SIXD_DATASETS/lm6d_origin/", "test_set_bb8_sixd.yml"))
     with open(res_file, "w") as f:
-        yaml.dump(test_set_dict, f, Dumper=yaml.RoundTripDumper, width=10000)
+        yaml.dump(test_set_dict, f, Dumper=yaml.RoundTrlmumper, width=10000)
 
     print("done")
 

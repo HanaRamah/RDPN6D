@@ -76,38 +76,16 @@ def get_model_params(datasets_path, dataset_name, model_type=None):
     """
     # Object ID's.
     obj_ids = {
-        "lm": list(range(1, 16)),
-        "lmo": [1, 5, 6, 8, 9, 10, 11, 12],
-        "tless": list(range(1, 31)),
-        "tudl": list(range(1, 4)),
-        "tyol": list(range(1, 22)),
-        "ruapc": list(range(1, 15)),
-        "icmi": list(range(1, 7)),
-        "icbin": list(range(1, 3)),
-        "itodd": list(range(1, 29)),
-        # Subset of the HB dataset used in the BOP Challenge 2019/2020:
-        "hbs": [1, 3, 4, 8, 9, 10, 12, 15, 17, 18, 19, 22, 23, 29, 32, 33],
-        "hb": list(range(1, 34)),  # Full HB dataset.
-        "ycbv": list(range(1, 22)),
-        "ycbvposecnn": list(range(1, 22)),
+        "ipd": [0, 1, 4, 8, 10, 11, 14, 18, 19, 20],
+       
     }[dataset_name]
 
     # ID's of objects with ambiguous views evaluated using the ADI pose error
     # function (the others are evaluated using ADD). See Hodan et al. (ECCVW'16).
     symmetric_obj_ids = {
-        "lm": [3, 7, 10, 11],
-        "lmo": [10, 11],
-        "tless": list(range(1, 31)),
-        "tudl": [],
-        "tyol": [3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 15, 16, 17, 18, 19, 21],
-        "ruapc": [8, 9, 12, 13],
-        "icmi": [1, 2, 6],
-        "icbin": [1],
-        "itodd": [2, 3, 4, 5, 7, 8, 9, 11, 12, 14, 17, 18, 19, 23, 24, 25, 27, 28],
-        "hbs": [10, 12, 18, 29],
-        "hb": [6, 10, 11, 12, 13, 14, 18, 24, 29],
-        "ycbv": [1, 13, 14, 16, 18, 19, 20, 21],  # bop symmetric objs
-        "ycbvposecnn": [13, 16, 19, 20, 21],  # posecnn symmetric objs
+        "ipd": [8, 14, 18, 19, 20],
+
+
     }[dataset_name]
 
     # T-LESS includes two types of object models, CAD and reconstructed.
@@ -179,17 +157,19 @@ def get_split_params(datasets_path, dataset_name, split, split_type=None):
 
     p["im_modalities"] = ["rgb", "depth"]
 
-    # Linemod (LM).
-    if dataset_name == "lm":
-        p["scene_ids"] = list(range(1, 16))
+    # Linemod (lm).
+    if dataset_name == "ipd":
+        p["scene_ids"] = list(range(0, 50))
         p["im_size"] = (640, 480)
 
         if split == "test":
             p["depth_range"] = (600.90, 1102.35)
             p["azimuth_range"] = (0, 2 * math.pi)
             p["elev_range"] = (0, 0.5 * math.pi)
+            p["im_size"] = (640, 480)
 
-    # Linemod-Occluded (LM-O).
+
+    # Linemod-Occluded (lm-O).
     elif dataset_name == "lmo":
         p["scene_ids"] = {"train": [1, 5, 6, 8, 9, 10, 11, 12], "test": [2]}[split]
         p["im_size"] = (640, 480)

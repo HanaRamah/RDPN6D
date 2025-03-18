@@ -129,7 +129,7 @@ def load_detections_into_dataset(
     """
 
     logger.info("Loading detections for {} from: {}".format(dataset_name, det_file))
-    detections = mmcv.load(det_file)
+    detections = mmcv.load(det_file)  
 
     meta = MetadataCatalog.get(dataset_name)
     objs = meta.objs

@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-import cyglfw3 as glfw
+import glfw
 from OpenGL.GL import *
 from OpenGL.GL.NV.bindless_texture import *
 

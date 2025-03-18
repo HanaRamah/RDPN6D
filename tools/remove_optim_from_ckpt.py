@@ -19,7 +19,7 @@ def main():
     parser = argparse.ArgumentParser(description="Remove the solver states stored in a trained model")
     parser.add_argument(
         "model",
-        default="output/roi10d/pose10d/pose10dEglLm4DebugRangerFlatAnnealCosineAugAaeWeakerFix3/model_final.pth",
+        default="output/roi10d/pose10d/pose10dEgllm4DebugRangerFlatAnnealCosineAugAaeWeakerFix3/model_final.pth",
         help="path to the input model file",
     )
 

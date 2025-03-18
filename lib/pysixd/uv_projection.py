@@ -57,7 +57,7 @@ class CoordinatesTransformer(object):
         projection_type: 'cylindrical'/'cylinder', 'spherical'/'sphere'
         """
         self.cls_name = cls_name
-        # model_dir = 'data/LINEMOD_6D/models'
+        # model_dir = 'data/_6D/models'
         # model_path = osp.join(model_dir, '{0}/{0}.ply'.format(cls_name))
         if isinstance(model_path_or_model, str):
             self.points_cart = load_ply_model(model_path_or_model)

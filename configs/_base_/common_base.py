@@ -144,10 +144,10 @@ TRAIN = dict(
 # Specific val options
 # ---------------------------------------------------------------------------- #
 VAL = dict(
-    DATASET_NAME="lm",
+    DATASET_NAME="ipd",
     SCRIPT_PATH="lib/pysixd/scripts/eval_pose_results_more.py",
     RESULTS_PATH="",
-    TARGETS_FILENAME="lm_test_targets_bb8.json",
+    TARGETS_FILENAME="ipd_test_targets_bb8.json",
     ERROR_TYPES="ad,rete,re,te,proj",
     RENDERER_TYPE="cpp",  # cpp, python, egl, aae
     SPLIT="test",

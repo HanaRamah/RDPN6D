@@ -172,7 +172,7 @@ def read_linemod_pose(rot_path, tra_path):
 
 
 # ======================================
-def pose_from_meta_LM6d(meta_file, cls_idx):
+def pose_from_meta_lm6d(meta_file, cls_idx):
     """assume single instance of cls_idx."""
     meta_data = sio.loadmat(meta_file)
     inner_id = np.where(np.squeeze(meta_data["cls_indexes"]) == cls_idx)
@@ -490,201 +490,122 @@ def load_ply_model(model_path, vertex_scale=1.0):
     return model["pts"] * vertex_scale
 
 
+import numpy as np
+import struct
+
+def _is_binary(path):
+    """Determine if the PLY file is binary."""
+    with open(path, "rb") as f:
+        for _ in range(10):  # Read the first few lines
+            line = f.readline()
+            if b"format binary" in line:
+                return True
+            if b"format ascii" in line:
+                return False
+    return False  # Default to ASCII if unclear
+
 def load_ply(path, vertex_scale=1.0):
-    # https://github.com/thodan/sixd_toolkit/blob/master/pysixd/inout.py
-    # bop_toolkit
-    """Loads a 3D mesh model from a PLY file.
+    """Loads a 3D mesh model from a PLY file."""
+    
+    is_binary = _is_binary(path)  # Detect if file is binary
+    with open(path, "rb") as f:   # Always open in binary mode
+        face_n_corners = 3
+        n_pts = 0
+        n_faces = 0
+        pt_props = []
+        face_props = []
+        header_vertex_section = False
+        header_face_section = False
+        texture_file = None
 
-    :param path: Path to a PLY file.
-    :return: The loaded model given by a dictionary with items:
-    -' pts' (nx3 ndarray),
-    - 'normals' (nx3 ndarray), optional
-    - 'colors' (nx3 ndarray), optional
-    - 'faces' (mx3 ndarray), optional.
-    - 'texture_uv' (nx2 ndarray), optional
-    - 'texture_uv_face' (mx6 ndarray), optional
-    - 'texture_file' (string), optional
-    """
-    if _is_binary(path):
-        f = open(path, "rb")
-    else:
-        f = open(path, "r")
+        # Read the header
+        header_lines = []
+        while True:
+            line = f.readline()
+            if not line:
+                raise ValueError("Invalid PLY file: missing header")
+            header_lines.append(line)
+            if line.startswith(b"end_header"):
+                break
 
-    # Only triangular faces are supported.
-    face_n_corners = 3
+        # Decode header
+        header_lines = [l.decode("utf-8").strip() for l in header_lines]
 
-    n_pts = 0
-    n_faces = 0
-    pt_props = []
-    face_props = []
-    is_binary = False
-    header_vertex_section = False
-    header_face_section = False
-    texture_file = None
+        for line in header_lines:
+            if line.startswith("comment TextureFile"):
+                texture_file = line.split()[-1]
+            elif line.startswith("element vertex"):
+                n_pts = int(line.split()[-1])
+                header_vertex_section = True
+                header_face_section = False
+            elif line.startswith("element face"):
+                n_faces = int(line.split()[-1])
+                header_vertex_section = False
+                header_face_section = True
+            elif line.startswith("element"):
+                header_vertex_section = False
+                header_face_section = False
+            elif line.startswith("property") and header_vertex_section:
+                prop_name = line.split()[-1]
+                if prop_name == "s":
+                    prop_name = "texture_u"
+                if prop_name == "t":
+                    prop_name = "texture_v"
+                prop_type = line.split()[-2]
+                pt_props.append((prop_name, prop_type))
+            elif line.startswith("property list") and header_face_section:
+                elems = line.split()
+                if elems[-1] in ["vertex_indices", "vertex_index"]:
+                    face_props.append(("n_corners", elems[2]))
+                    for i in range(face_n_corners):
+                        face_props.append((f"ind_{i}", elems[3]))
+                elif elems[-1] == "texcoord":
+                    face_props.append(("texcoord", elems[2]))
+                    for i in range(face_n_corners * 2):
+                        face_props.append((f"texcoord_ind_{i}", elems[3]))
 
-    # Read the header.
-    while True:
+        # Prepare data structures
+        model = {}
+        if texture_file:
+            model["texture_file"] = texture_file
+        model["pts"] = np.zeros((n_pts, 3), np.float64)
+        if n_faces > 0:
+            model["faces"] = np.zeros((n_faces, face_n_corners), np.int32)
 
-        # Strip the newline character(s)
-        line = f.readline()
-        if isinstance(line, str):
-            line = line.rstrip("\n").rstrip("\r")
-        else:
-            line = str(line, "utf-8").rstrip("\n").rstrip("\r")
+        formats = {"float": ("f", 4), "double": ("d", 8), "int": ("i", 4), "uchar": ("B", 1)}
 
-        if line.startswith("comment TextureFile"):
-            texture_file = line.split()[-1]
-        elif line.startswith("element vertex"):
-            n_pts = int(line.split()[-1])
-            header_vertex_section = True
-            header_face_section = False
-        elif line.startswith("element face"):
-            n_faces = int(line.split()[-1])
-            header_vertex_section = False
-            header_face_section = True
-        elif line.startswith("element"):  # Some other element.
-            header_vertex_section = False
-            header_face_section = False
-        elif line.startswith("property") and header_vertex_section:
-            # (name of the property, data type)
-            prop_name = line.split()[-1]
-            if prop_name == "s":
-                prop_name = "texture_u"
-            if prop_name == "t":
-                prop_name = "texture_v"
-            prop_type = line.split()[-2]
-            pt_props.append((prop_name, prop_type))
-        elif line.startswith("property list") and header_face_section:
-            elems = line.split()
-            if elems[-1] == "vertex_indices" or elems[-1] == "vertex_index":
-                # (name of the property, data type)
-                face_props.append(("n_corners", elems[2]))
-                for i in range(face_n_corners):
-                    face_props.append(("ind_" + str(i), elems[3]))
-            elif elems[-1] == "texcoord":
-                # (name of the property, data type)
-                face_props.append(("texcoord", elems[2]))
-                for i in range(face_n_corners * 2):
-                    face_props.append(("texcoord_ind_" + str(i), elems[3]))
+        # Load vertices
+        for pt_id in range(n_pts):
+            prop_vals = {}
+            if is_binary:
+                for prop in pt_props:
+                    fmt = formats[prop[1]]
+                    read_data = f.read(fmt[1])
+                    val = struct.unpack(fmt[0], read_data)[0]
+                    prop_vals[prop[0]] = val
             else:
-                logger.warning("Warning: Not supported face property: " + elems[-1])
-        elif line.startswith("format"):
-            if "binary" in line:
-                is_binary = True
-        elif line.startswith("end_header"):
-            break
-
-    # Prepare data structures.
-    model = {}
-    if texture_file is not None:
-        model["texture_file"] = texture_file
-    model["pts"] = np.zeros((n_pts, 3), np.float64)
-    if n_faces > 0:
-        model["faces"] = np.zeros((n_faces, face_n_corners), np.float64)
-
-    # print(pt_props)
-    pt_props_names = [p[0] for p in pt_props]
-    face_props_names = [p[0] for p in face_props]
-    # print(pt_props_names)
-
-    is_normal = False
-    if {"nx", "ny", "nz"}.issubset(set(pt_props_names)):
-        is_normal = True
-        model["normals"] = np.zeros((n_pts, 3), np.float64)
-
-    is_color = False
-    if {"red", "green", "blue"}.issubset(set(pt_props_names)):
-        is_color = True
-        model["colors"] = np.zeros((n_pts, 3), np.float64)
-
-    is_texture_pt = False
-    if {"texture_u", "texture_v"}.issubset(set(pt_props_names)):
-        is_texture_pt = True
-        model["texture_uv"] = np.zeros((n_pts, 2), np.float64)
-
-    is_texture_face = False
-    if {"texcoord"}.issubset(set(face_props_names)):
-        is_texture_face = True
-        model["texture_uv_face"] = np.zeros((n_faces, 6), np.float64)
-
-    # Formats for the binary case.
-    formats = {"float": ("f", 4), "double": ("d", 8), "int": ("i", 4), "uchar": ("B", 1)}
-
-    # Load vertices.
-    for pt_id in range(n_pts):
-        prop_vals = {}
-        load_props = ["x", "y", "z", "nx", "ny", "nz", "red", "green", "blue", "texture_u", "texture_v"]
-        if is_binary:
-            for prop in pt_props:
-                format = formats[prop[1]]
-                read_data = f.read(format[1])
-                val = struct.unpack(format[0], read_data)[0]
-                if prop[0] in load_props:
-                    prop_vals[prop[0]] = val
-        else:
-            elems = f.readline().rstrip("\n").rstrip("\r").split()
-            for prop_id, prop in enumerate(pt_props):
-                if prop[0] in load_props:
+                elems = f.readline().decode("utf-8").strip().split()
+                for prop_id, prop in enumerate(pt_props):
                     prop_vals[prop[0]] = elems[prop_id]
 
-        model["pts"][pt_id, 0] = float(prop_vals["x"])
-        model["pts"][pt_id, 1] = float(prop_vals["y"])
-        model["pts"][pt_id, 2] = float(prop_vals["z"])
+            model["pts"][pt_id] = [float(prop_vals["x"]), float(prop_vals["y"]), float(prop_vals["z"])]
 
-        if is_normal:
-            model["normals"][pt_id, 0] = float(prop_vals["nx"])
-            model["normals"][pt_id, 1] = float(prop_vals["ny"])
-            model["normals"][pt_id, 2] = float(prop_vals["nz"])
-
-        if is_color:
-            model["colors"][pt_id, 0] = float(prop_vals["red"])
-            model["colors"][pt_id, 1] = float(prop_vals["green"])
-            model["colors"][pt_id, 2] = float(prop_vals["blue"])
-
-        if is_texture_pt:
-            model["texture_uv"][pt_id, 0] = float(prop_vals["texture_u"])
-            model["texture_uv"][pt_id, 1] = float(prop_vals["texture_v"])
-
-    # Load faces.
-    for face_id in range(n_faces):
-        prop_vals = {}
-        if is_binary:
-            for prop in face_props:
-                format = formats[prop[1]]
-                val = struct.unpack(format[0], f.read(format[1]))[0]
-                if prop[0] == "n_corners":
-                    if val != face_n_corners:
-                        raise ValueError("Only triangular faces are supported.")
-                        # print("Number of face corners: " + str(val))
-                        # exit(-1)
-                elif prop[0] == "texcoord":
-                    if val != face_n_corners * 2:
-                        raise ValueError("Wrong number of UV face coordinates.")
-                else:
+        # Load faces
+        for face_id in range(n_faces):
+            prop_vals = {}
+            if is_binary:
+                for prop in face_props:
+                    fmt = formats[prop[1]]
+                    val = struct.unpack(fmt[0], f.read(fmt[1]))[0]
                     prop_vals[prop[0]] = val
-        else:
-            elems = f.readline().rstrip("\n").rstrip("\r").split()
-            for prop_id, prop in enumerate(face_props):
-                if prop[0] == "n_corners":
-                    if int(elems[prop_id]) != face_n_corners:
-                        raise ValueError("Only triangular faces are supported.")
-                elif prop[0] == "texcoord":
-                    if int(elems[prop_id]) != face_n_corners * 2:
-                        raise ValueError("Wrong number of UV face coordinates.")
-                else:
+            else:
+                elems = f.readline().decode("utf-8").strip().split()
+                for prop_id, prop in enumerate(face_props):
                     prop_vals[prop[0]] = elems[prop_id]
 
-        model["faces"][face_id, 0] = int(prop_vals["ind_0"])
-        model["faces"][face_id, 1] = int(prop_vals["ind_1"])
-        model["faces"][face_id, 2] = int(prop_vals["ind_2"])
+            model["faces"][face_id] = [int(prop_vals["ind_0"]), int(prop_vals["ind_1"]), int(prop_vals["ind_2"])]
 
-        if is_texture_face:
-            for i in range(6):
-                model["texture_uv_face"][face_id, i] = float(prop_vals["texcoord_ind_{}".format(i)])
-
-    f.close()
     model["pts"] *= vertex_scale
-
     return model
 
 
@@ -892,8 +813,8 @@ def obj_vtx(filename):
 
 if __name__ == "__main__":
     # test load (binary/text) ply model
-    train_model_dir = "data/BOP_DATASETS/lm_full/models"
-    val_model_dir = "data/BOP_DATASETS/lm_full/models_eval"
+    train_model_dir = "data/BOP_DATASETS/ipd_full/models"
+    val_model_dir = "data/BOP_DATASETS/ipd_full/models_eval"
     obj_id = 1
     model_train = load_ply(osp.join(train_model_dir, "obj_{:06d}.ply".format(obj_id)))
     print("train", model_train["pts"].shape, model_train["pts"].min(0), model_train["pts"].max(0))

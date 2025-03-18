@@ -1375,17 +1375,17 @@ def calc_texture_uv_emb_proj(uv_model_path_or_model, R, T, K, height=480, width=
 
 def test_draw_3d_bbox():
     cur_dir = os.path.abspath(os.path.dirname(__file__))
-    K = np.array([[572.4114, 0, 325.2611], [0, 573.57043, 242.04899], [0, 0, 1]])  # LM6d
-    model_dir = os.path.join(cur_dir, "../../datasets/BOP_DATASETS/lm/models")
+    K = np.array([[572.4114, 0, 325.2611], [0, 573.57043, 242.04899], [0, 0, 1]])  # lm6d
+    model_dir = os.path.join(cur_dir, "../../datasets/BOP_DATASETS/ipd/models")
     class_name = "ape"
     cls_idx = 1
     model_path = os.path.join(model_dir, "obj_{:06d}.ply".format(cls_idx))
     pts_3d = load_ply(model_path, vertex_scale=0.001)["pts"]
     corners_3d = get_3D_corners(pts_3d)
-    image_path = os.path.join(cur_dir, "../../datasets/BOP_DATASETS/lm/test/000001/rgb/000011.png")
+    image_path = os.path.join(cur_dir, "../../datasets/BOP_DATASETS/ipd/test/000001/rgb/000011.png")
     image = cv2.imread(image_path, cv2.IMREAD_COLOR)
 
-    gt_dict = mmcv.load(os.path.join(cur_dir, "../../datasets/BOP_DATASETS/lm/test/000001/scene_gt.json"))
+    gt_dict = mmcv.load(os.path.join(cur_dir, "../../datasets/BOP_DATASETS/ipd/test/000001/scene_gt.json"))
     R = np.array(gt_dict["11"][0]["cam_R_m2c"]).reshape(3, 3)
     t = np.array(gt_dict["11"][0]["cam_t_m2c"]) / 1000.0
 
@@ -1401,8 +1401,8 @@ if __name__ == "__main__":
 
     # import scipy.io as sio
     cur_dir = os.path.abspath(os.path.dirname(__file__))
-    K = np.array([[572.4114, 0, 325.2611], [0, 573.57043, 242.04899], [0, 0, 1]])  # LM6d
-    # depth_path = os.path.join(cur_dir, '../../data/LINEMOD_6D/LM6d_render_v1/data/real/01/000001-depth.png')
+    K = np.array([[572.4114, 0, 325.2611], [0, 573.57043, 242.04899], [0, 0, 1]])  # lm6d
+    # depth_path = os.path.join(cur_dir, '../../data/LINEMOD_6D/lm6d_render_v1/data/real/01/000001-depth.png')
     # depth_gt = cv2.imread(depth_path, cv2.IMREAD_UNCHANGED) / 1000.
     # dist_gt = depth_im_to_dist_im(depth_gt, K)
     # print(dist_gt.shape)

@@ -71,7 +71,7 @@ This module follows the "column vectors on the right" and "row major storage"
 (C contiguous) conventions. The translation components are in the right column
 of the transformation matrix, i.e. M[:3, 3].
 The transpose of the transformation matrices may have to be used to interface
-with other graphics systems, e.g. with OpenGL's glMultMatrixd(). See also [16].
+with other graphics systems, e.g. with OpenGL's glmultMatrixd(). See also [16].
 
 Calculations are carried out with numpy.float64 precision.
 
