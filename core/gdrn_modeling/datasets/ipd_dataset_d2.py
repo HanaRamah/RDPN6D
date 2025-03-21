@@ -110,7 +110,7 @@ class IPD_Dataset(object):
             for im_id in tqdm(indices):
                 int_im_id = int(im_id)
                 str_im_id = str(int_im_id)
-                rgb_path = osp.join(scene_root, "rgb/{:06d}.png").format(int_im_id)
+                rgb_path = osp.join(scene_root, "rgb/{:06d}.jpg").format(int_im_id)
                 assert osp.exists(rgb_path), rgb_path
 
                 depth_path = osp.join(scene_root, "depth/{:06d}.png".format(int_im_id))
@@ -185,7 +185,7 @@ class IPD_Dataset(object):
                         # "mask_full_file": mask_file,  # TODO: load as mask_full, rle
                     }
                     if "test" not in self.name:
-                        xyz_path = osp.join(xyz_root, f"{int_im_id:06d}_{anno_i:06d}.pkl")
+                        xyz_path = osp.join(xyz_root, f"{int_im_id:06d}_{anno_i:06d}-xyz.pkl")
                         assert osp.exists(xyz_path), xyz_path
                         inst["xyz_path"] = xyz_path
 
@@ -308,11 +308,11 @@ SPLITS_IPD = dict(
             for _obj in IPD_OBJECTS
         ],
         image_prefixes=[
-            osp.join(DATASETS_ROOT, "BOP_DATASETS/ipd/test/{:06d}".format(ref.ipd_full.obj2id[_obj]))
+            osp.join(DATASETS_ROOT, "BOP_DATASETS/ipd/train_pbr/{:06d}".format(ref.ipd_full.obj2id[_obj]))
             for _obj in IPD_OBJECTS
         ],
         xyz_prefixes=[
-            osp.join(DATASETS_ROOT, "BOP_DATASETS/ipd/test/xyz_crop/{:06d}".format(ref.ipd_full.obj2id[_obj]))
+            osp.join(DATASETS_ROOT, "BOP_DATASETS/ipd/train_pbr/xyz_crop/{:06d}".format(ref.ipd_full.obj2id[_obj]))
             for _obj in IPD_OBJECTS
         ],
         scale_to_meter=0.001,
