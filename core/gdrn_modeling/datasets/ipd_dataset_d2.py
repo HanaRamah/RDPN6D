@@ -110,7 +110,11 @@ class IPD_Dataset(object):
             for im_id in tqdm(indices):
                 int_im_id = int(im_id)
                 str_im_id = str(int_im_id)
-                rgb_path = osp.join(scene_root, "rgb/{:06d}.jpg").format(int_im_id)
+                if "train" in self.name: 
+                    img_extension = ".jpg"
+                else:  
+                    img_extension = ".png"
+                rgb_path = osp.join(scene_root, f"rgb/{int_im_id:06d}{img_extension}")
                 assert osp.exists(rgb_path), rgb_path
 
                 depth_path = osp.join(scene_root, "depth/{:06d}.png".format(int_im_id))
@@ -161,22 +165,6 @@ class IPD_Dataset(object):
                             self.num_instances_without_valid_box += 1
                             continue
 
-                    mask_file = osp.join(scene_root, "mask/{:06d}_{:06d}.png".format(int_im_id, anno_i))
-                    mask_visib_file = osp.join(scene_root, "mask_visib/{:06d}_{:06d}.png".format(int_im_id, anno_i))
-                    
-                    if not osp.exists(mask_file) or not osp.exists(mask_visib_file):
-                       continue
-
-                    # assert osp.exists(mask_file), mask_file
-                    # assert osp.exists(mask_visib_file), mask_visib_file
-                    # load mask visib  TODO: load both mask_visib and mask_full
-                    mask_single = mmcv.imread(mask_visib_file, "unchanged")
-                    area = mask_single.sum()
-                    if area < 3:  # filter out too small or nearly invisible instances
-                        self.num_instances_without_valid_segmentation += 1
-                        continue
-                    mask_rle = binary_mask_to_rle(mask_single, compressed=True)
-
                     inst = {
                         "category_id": cur_label,  # 0-based label
                         "bbox": bbox_visib,  # TODO: load both bbox_obj and bbox_visib
@@ -185,9 +173,27 @@ class IPD_Dataset(object):
                         "quat": quat,
                         "trans": t,
                         "centroid_2d": proj,  # absolute (cx, cy)
-                        "segmentation": mask_rle,
-                        "mask_full_file": mask_file,  # TODO: load as mask_full, rle
                     }
+
+                    # Only load and process masks if split is 'train'
+                    if "train" in self.name and self.with_masks:
+                        mask_file = osp.join(scene_root, "mask/{:06d}_{:06d}.png".format(int_im_id, anno_i))
+                        mask_visib_file = osp.join(scene_root, "mask_visib/{:06d}_{:06d}.png".format(int_im_id, anno_i))
+                        
+                        if not osp.exists(mask_file) or not osp.exists(mask_visib_file):
+                            continue
+
+                        # Load and process mask_visib
+                        mask_single = mmcv.imread(mask_visib_file, "unchanged")
+                        area = mask_single.sum()
+                        if area < 3:  # filter out too small or nearly invisible instances
+                            self.num_instances_without_valid_segmentation += 1
+                            continue
+                        mask_rle = binary_mask_to_rle(mask_single, compressed=True)
+                        
+                        inst["segmentation"] = mask_rle
+                        inst["mask_full_file"] = mask_file
+
                     if "test" not in self.name:
                         xyz_path = osp.join(xyz_root, f"{int_im_id:06d}_{anno_i:06d}-xyz.pkl")
                         assert osp.exists(xyz_path), xyz_path
