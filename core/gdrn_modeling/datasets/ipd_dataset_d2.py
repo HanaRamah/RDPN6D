@@ -140,7 +140,7 @@ class IPD_Dataset(object):
                     "img_type": "real",
                 }
                 insts = []
-                for anno_i, anno in enumerate(gt_dict[str_im_id]):
+                for anno_i, anno in enumerate(gt_dict.get(str_im_id, [])):
                     obj_id = anno["obj_id"]
                     if obj_id not in self.cat_ids:
                         continue
@@ -161,17 +161,21 @@ class IPD_Dataset(object):
                             self.num_instances_without_valid_box += 1
                             continue
 
-                    # mask_file = osp.join(scene_root, "mask/{:06d}_{:06d}.png".format(int_im_id, anno_i))
-                    # mask_visib_file = osp.join(scene_root, "mask_visib/{:06d}_{:06d}.png".format(int_im_id, anno_i))
+                    mask_file = osp.join(scene_root, "mask/{:06d}_{:06d}.png".format(int_im_id, anno_i))
+                    mask_visib_file = osp.join(scene_root, "mask_visib/{:06d}_{:06d}.png".format(int_im_id, anno_i))
+                    
+                    if not osp.exists(mask_file) or not osp.exists(mask_visib_file):
+                       continue
+
                     # assert osp.exists(mask_file), mask_file
                     # assert osp.exists(mask_visib_file), mask_visib_file
                     # load mask visib  TODO: load both mask_visib and mask_full
-                    # mask_single = mmcv.imread(mask_visib_file, "unchanged")
-                    # # area = mask_single.sum()
-                    # if area < 3:  # filter out too small or nearly invisible instances
-                    #     self.num_instances_without_valid_segmentation += 1
-                    #     continue
-                    # mask_rle = binary_mask_to_rle(mask_single, compressed=True)
+                    mask_single = mmcv.imread(mask_visib_file, "unchanged")
+                    area = mask_single.sum()
+                    if area < 3:  # filter out too small or nearly invisible instances
+                        self.num_instances_without_valid_segmentation += 1
+                        continue
+                    mask_rle = binary_mask_to_rle(mask_single, compressed=True)
 
                     inst = {
                         "category_id": cur_label,  # 0-based label
@@ -181,8 +185,8 @@ class IPD_Dataset(object):
                         "quat": quat,
                         "trans": t,
                         "centroid_2d": proj,  # absolute (cx, cy)
-                        # "segmentation": mask_rle,
-                        # "mask_full_file": mask_file,  # TODO: load as mask_full, rle
+                        "segmentation": mask_rle,
+                        "mask_full_file": mask_file,  # TODO: load as mask_full, rle
                     }
                     if "test" not in self.name:
                         xyz_path = osp.join(xyz_root, f"{int_im_id:06d}_{anno_i:06d}-xyz.pkl")

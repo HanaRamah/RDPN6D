@@ -660,7 +660,7 @@ class GDRN_DatasetFromList(Base_DatasetFromList):
 
         # NOTE: full mask
         mask_obj = ((xyz[:, :, 0] != 0) | (xyz[:, :, 1] != 0) | (
-            xyz[:, :, 2] != 0)).astype(np.bool).astype(np.float32)
+            xyz[:, :, 2] != 0)).astype(bool).astype(np.float32)
         if cfg.INPUT.SMOOTH_XYZ:
             xyz = self.smooth_xyz(xyz)
 
