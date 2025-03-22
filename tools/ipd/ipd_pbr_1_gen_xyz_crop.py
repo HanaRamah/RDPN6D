@@ -7,8 +7,12 @@ import os.path as osp
 import sys
 
 import mmcv
+from mmengine.fileio import load
+import os.path as osp
 import numpy as np
 from tqdm import tqdm
+from mmengine.fileio import dump
+
 
 cur_dir = osp.abspath(osp.dirname(__file__))
 PROJ_ROOT = osp.join(cur_dir, "../..")
@@ -55,7 +59,10 @@ texture_paths = None
 scenes = [i for i in range(0, 49 + 1)]
 xyz_root = osp.normpath(osp.join(PROJ_ROOT, "datasets/BOP_DATASETS/ipd/train_pbr/xyz_crop"))
 
-K = np.array([[572.4114, 0, 325.2611], [0, 573.57043, 242.04899], [0, 0, 1]])
+# K = np.array([[572.4114, 0, 325.2611], [0, 573.57043, 242.04899], [0, 0, 1]])
+K = np.array([[3981.98599114, 0, 1954.18728638], [0, 3981.98599114 , 1103.69781494], [0, 0, 1]])
+K2 = np.array([[3920.81900442, 0, 1908.61460876], [0, 3920.81900442 , 1103.98973083], [0, 0, 1]])
+K3 = np.array([[3908.14315792, 0, 1890.71400452], [0, 3908.14315792 , 1075.802948], [0, 0, 1]])
 
 
 def normalize_to_01(img):
@@ -108,7 +115,9 @@ class XyzGen(object):
             print("split: {} scene: {}".format(split, scene_id))
             scene_root = osp.join(data_root, f"{scene_id:06d}")
 
-            gt_dict = mmcv.load(osp.join(scene_root, "scene_gt.json"))
+            # gt_dict = mmcv.load(osp.join(scene_root, "scene_gt.json"))
+            gt_dict = load(osp.join(scene_root, "scene_gt.json"))
+
             # gt_info_dict = mmcv.load(osp.join(scene_root, "scene_gt_info.json"))
             # cam_dict = mmcv.load(osp.join(scene_root, "scene_camera.json"))
 
@@ -196,8 +205,10 @@ class XyzGen(object):
                             grid_show(show_ims, show_titles, row=1, col=3)
 
                     if not args.no_save:
-                        mmcv.mkdir_or_exist(osp.dirname(save_path))
-                        mmcv.dump(xyz_info, save_path)
+                        # mmcv.mkdir_or_exist(osp.dirname(save_path))
+                        # mmcv.dump(xyz_info, save_path)
+                        os.makedirs(os.path.dirname(save_path), exist_ok=True)  # Replaces mmcv.mkdir_or_exist
+                        dump(xyz_info, save_path)  # Replaces mmcv.dump
         if self.renderer is not None:
             self.renderer.close()
 

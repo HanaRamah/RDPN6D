@@ -17,7 +17,7 @@ def load(filename):
     return mesh.vertices, mesh.normals, mesh.texturecoords[0, :, :2]
 
 
-def load_meshes_sixd(obj_files, vertex_tmp_store_folder, recalculate_normals=False):
+def load_meshes_sixd(obj_files, vertex_tmp_store_folder, recalculate_normals=True):
 
     hashed_file_name = (
         hashlib.md5(("".join(obj_files) + "load_meshes_sixd" + str(recalculate_normals)).encode("utf-8")).hexdigest()
@@ -25,15 +25,17 @@ def load_meshes_sixd(obj_files, vertex_tmp_store_folder, recalculate_normals=Fal
     )
 
     out_file = os.path.join(vertex_tmp_store_folder, hashed_file_name)
-    if os.path.exists(out_file):
-        return np.load(out_file, allow_pickle=True)
+    # problemmmmmmm TODO Hassan Hana TODO
+    # if os.path.exists(out_file):
+    if False:
+        return np.load(out_file, allow_pickle=False)
     else:
 
         attributes = []
         for model_path in tqdm(obj_files):
             model = inout.load_ply(model_path)
             vertices = np.array(model["pts"]).astype(np.float32)
-            if recalculate_normals:
+            if recalculate_normals:           
                 normals = calc_normals(vertices)
             else:
                 normals = np.array(model["normals"]).astype(np.float32)
@@ -44,7 +46,8 @@ def load_meshes_sixd(obj_files, vertex_tmp_store_folder, recalculate_normals=Fal
             else:
                 attributes.append((vertices, normals, faces))
         os.makedirs(vertex_tmp_store_folder, exist_ok=True)
-        np.save(out_file, attributes)
+        np.savez(out_file, vertices=vertices, normals=normals, faces=faces)
+
         return attributes
 
 
