@@ -55,7 +55,9 @@ texture_paths = None
 scenes = [i for i in range(0, 49 + 1)]
 xyz_root = osp.normpath(osp.join(PROJ_ROOT, "datasets/BOP_DATASETS/ipd/train_pbr/xyz_crop"))
 
-K = np.array([[572.4114, 0, 325.2611], [0, 573.57043, 242.04899], [0, 0, 1]])
+K = np.array([[3981.98599114, 0, 1954.18728638], [0, 3981.98599114 , 1103.69781494], [0, 0, 1]])
+K2 = np.array([[3920.81900442, 0, 1908.61460876], [0, 3920.81900442 , 1103.98973083], [0, 0, 1]])
+K3 = np.array([[3908.14315792, 0, 1890.71400452], [0, 3908.14315792 , 1075.802948], [0, 0, 1]])
 
 
 def normalize_to_01(img):
