@@ -326,7 +326,7 @@ SPLITS_IPD = dict(
             for _obj in IPD_OBJECTS
         ],
         scale_to_meter=0.001,
-        with_masks=False,  # (load masks but may not use it)
+        with_masks=True,  # (load masks but may not use it)
         with_depth=True,  # (load depth path here, but may not use it)
         height=480,
         width=640,
